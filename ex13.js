@@ -25,5 +25,32 @@ var Request2 = {
     me.loading = false;
     m.redraw();
   },
+  fail: function(errorStatus){
+    var me = Request2;
+    me.loading = false;
+    me.errorMsg = "Server responded with a "+errorStatus+" error status.";
+    m.redraw();
+  },
+
+  view: function(){
+    return [
+      m("h3", "Members of the fellowship"),
+      this.loading ? m("button.dull", "Loading fellowship...") :
+        m("button", {onclick: this.click.bind(this)}, "Load Fellowship Members"),
+      this.loading ? m("button.dull", "Loading fellowship...") : m("button.error", {onclick: this.errorClick.bind(this)}, "Fail to Load"),
+      !this.data() || this.errorMsg ? "" :
+        m("table",
+          this.data().members.map(function(member){
+            return m("tr", [m("td", member.name), m("td", member.race)]);
+          })
+        ),
+      !this.errorMsg ? "" : [
+        m("h4", "We hates it forever"),
+        m("p", this.errorMsg)
+      ]
+    ]
+  }
 
 }
+
+m.module(document.getElementById("tiny"), Request2);
